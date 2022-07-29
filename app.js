@@ -1,4 +1,7 @@
+const dotenv=require("dotenv")
+
 const express= require('express')
+
 
 const mongoose=require('mongoose')
 
@@ -10,24 +13,18 @@ app.use(express.json());
 
 app.use(require('./router/auth'))
 
+dotenv.config({path:'./config.env'})
+
+require('./db/conn')
+
+const PORT=process.env.PORT
 
 
 
 
-const db='mongodb+srv://vysakhmnair:vysakhvivi007@cluster0.vns9c1c.mongodb.net/product?retryWrites=true&w=majority'
 
 
 
-
-mongoose.connect(db,{
-    
-    maxPoolSize: 50,
-    wtimeoutMS: 2500,
-    useNewUrlParser: true,
-   
-}).then(()=>{
-    console.log('connection successfull');
-}).catch((err)=>console.log('cant connect'))
 
 
 const middleware=(req,res,next)=>{
@@ -40,6 +37,6 @@ app.get('/',(req,res) =>{
 res.send('testing from backend')
 });
 
-app.listen(3000,()=>{
-    console.log('server is running at port 3000');
+app.listen(PORT,()=>{
+    console.log(`server is running at port ${PORT}`);
 })

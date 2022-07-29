@@ -1,16 +1,24 @@
 const dotenv=require("dotenv")
 
+
+const cors=require('cors')
+
 const express= require('express')
+const app = express();
 dotenv.config({path:'./config.env'})
 
 require('./db/conn')
+
+app.use(cors({
+    origin:'http://localhost:3000'
+}))
 
 
 const mongoose=require('mongoose')
 
 const User=require('./model/userschema')
 
-const app = express();
+
 
 app.use(express.json());
 

@@ -8,6 +8,8 @@ const jwt= require('jsonwebtoken')
 
 require("../db/conn");
 
+
+
 const User = require("../model/userschema");
 
 router.get('/', (req, res) => {

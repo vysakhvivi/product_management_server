@@ -1,10 +1,18 @@
-const expresss= require('express')
+const express= require('express')
 
 const mongoose=require('mongoose')
 
+const User=require('./model/userschema')
+
+const app = express();
+
+app.use(express.json());
+
+app.use(require('./router/auth'))
 
 
-const app = expresss();
+
+
 
 const db='mongodb+srv://vysakhmnair:vysakhvivi007@cluster0.vns9c1c.mongodb.net/product?retryWrites=true&w=majority'
 

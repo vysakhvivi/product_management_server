@@ -1,6 +1,9 @@
 const dotenv=require("dotenv")
 
 const express= require('express')
+dotenv.config({path:'./config.env'})
+
+require('./db/conn')
 
 
 const mongoose=require('mongoose')
@@ -13,18 +16,11 @@ app.use(express.json());
 
 app.use(require('./router/auth'))
 
-dotenv.config({path:'./config.env'})
 
-require('./db/conn')
+
+
 
 const PORT=process.env.PORT
-
-
-
-
-
-
-
 
 
 const middleware=(req,res,next)=>{

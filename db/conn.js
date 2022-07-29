@@ -1,9 +1,8 @@
-const mongoose=require('mongoose')
+const mongoose=require('mongoose');
+const DB=process.env.DATABASE;
 
-const db=process.env.DATABASE
 
-mongoose.connect(db,{
-    
+mongoose.connect(DB,{
     maxPoolSize: 50,
     wtimeoutMS: 2500,
     useNewUrlParser: true,

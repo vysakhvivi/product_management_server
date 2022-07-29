@@ -9,9 +9,7 @@ dotenv.config({path:'./config.env'})
 
 require('./db/conn')
 
-app.use(cors({
-    origin:'http://localhost:3000'
-}))
+app.use(cors())
 
 
 const mongoose=require('mongoose')
@@ -40,6 +38,10 @@ middleware();
 app.get('/',(req,res) =>{
 res.send('testing from backend')
 });
+
+app.post('/', async (req,res)=>{
+    res.send('testing post')
+})
 
 app.listen(PORT,()=>{
     console.log(`server is running at port ${PORT}`);

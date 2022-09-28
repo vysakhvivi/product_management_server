@@ -4,6 +4,8 @@ const cors=require('cors')
 
 const express= require('express')
 const app = express();
+
+
 dotenv.config({path:'./config.env'})
 
 require('./db/conn')
@@ -14,7 +16,6 @@ app.use(cors({
 
 
     
-
 
 const mongoose=require('mongoose')
 

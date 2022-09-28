@@ -4,11 +4,24 @@ const router = express.Router();
 
 const bcrypt = require('bcryptjs')
 
+const User = require("../model/userschema");
+
 const jwt= require('jsonwebtoken')
+
+const cookieparser= require('cookie-parser')
+
+router.use(cookieparser())
+
 
 require("../db/conn");
 
-const User = require("../model/userschema");
+
+const authenticate=require('../middleware/authenticate')
+
+
+
+
+
 
 router.get('/', (req, res) => {
     res.send('testing from backend router');
@@ -47,10 +60,16 @@ router.post('/', async (req, res) => {
         
             const token = await userlogin.generateAuthToken();
 
-            res.cookie("jwtoken",token)
+            res.cookie("tokenjwt",token,{
+                httpOnly:true
+            })
+
+            
 
             if (samepass) {
                 res.status(200).json({ message: "Successfully signed-in" })
+                res.send('userlogin')
+                
             }
             else{
                 res.status(400).json({error:"Invalid data"})
@@ -67,6 +86,12 @@ router.post('/', async (req, res) => {
         console.log(err);
     }
 })
+
+router.get('/addproduct', (req,res)=>{
+    console.log('home page')
+    res.send(req.rootUser);
+})
+
 
 // router.get('./addproduct',async (req,res)=>{
 //     try{

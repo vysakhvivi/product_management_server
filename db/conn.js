@@ -8,5 +8,5 @@ mongoose.connect(DB,{
     useNewUrlParser: true,
    
 }).then(()=>{
-    console.log('connection successfull');
+    console.log('Mongodb Atlas connection successfull');
 }).catch((err)=>console.log('cant connect'))

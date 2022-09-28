@@ -8,19 +8,17 @@ const jwt= require('jsonwebtoken')
 
 require("../db/conn");
 
-
-
 const User = require("../model/userschema");
 
 router.get('/', (req, res) => {
     res.send('testing from backend router');
 });
 
-router.post('/', async (req, res) => {
-    const { name, email, password, place } = req.body;
+router.post('/register', async (req, res) => {
+    const {username,email,place,password} = req.body;
 
-    if (!name || !email || !password || !place) {
-        return res.status(422).json({ error: "Enter the required fields" })
+    if (!username || !email || !place || !password) {
+        return res.status(401).json({ error: "Enter the required fields" })
     }
 
     User.findOne({ email: email })
@@ -28,7 +26,7 @@ router.post('/', async (req, res) => {
             if (userAlreadyExist) {
                 return res.status(422).json({ error: "Email already Exist" });
             }
-            const user = new User({ name, email, password, place });
+            const user = new User({ username, email, password, place });
 
             user.save().then(() => {
                 res.status(201).json({ message: "user details successfully saved" })
@@ -36,7 +34,7 @@ router.post('/', async (req, res) => {
         }).catch((err) => { console.log(err); })
 })
 
-router.post('/login', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -49,10 +47,7 @@ router.post('/login', async (req, res) => {
         
             const token = await userlogin.generateAuthToken();
 
-            res.cookie("jwtoken",token,{
-                expires:new Date(Date.now()+3000000000),
-                httpOnly:true
-            })
+            res.cookie("jwtoken",token)
 
             if (samepass) {
                 res.status(200).json({ message: "Successfully signed-in" })
@@ -72,6 +67,23 @@ router.post('/login', async (req, res) => {
         console.log(err);
     }
 })
+
+// router.get('./addproduct',async (req,res)=>{
+//     try{
+//      const {brandname,productname,picture,quantity,price,description} = req.body;
+
+//      if(!brandname || !productname || !picture || !quantity || !price || !description )
+//      return res.json({error:"Please Fill all the Forms"})
+
+
+//     }
+//     catch(error){
+
+//     }
+
+
+// })
+
 
 
 module.exports = router;

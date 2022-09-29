@@ -67,16 +67,16 @@ router.post('/', async (req, res) => {
             
 
             if (samepass) {
-                res.status(200).json({ message: "Successfully signed-in" })
-                res.send('userlogin')
                 
+                res.status(200).json(token)
+                      
             }
             else{
                 res.status(400).json({error:"Invalid data"})
             }
         }
         else {
-            res.status(400).json({ error: "Please check the entered data" })
+            res.status(406).json({ error: "Please check the entered data" })
         }
 
 
@@ -87,9 +87,39 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.get('/addproduct', (req,res)=>{
+router.get('/homepage', async (req,res)=>{
     console.log('home page')
-    res.send(req.rootUser);
+})
+
+router.post('/addproduct', async (req,res)=>{
+    try{
+
+    const {brandname,productname,quantity,price,description,tokendata}=req.body;
+
+        
+    
+        const rootuser = await User.findOne({tokendata:"tokens.token"})
+
+        console.log(rootuser)
+
+        if(!rootuser) 
+        {
+            res.json({error:"please fill the product details "})
+        }
+        else
+        {
+            const addprod = await  rootuser.addmethod(brandname,productname,quantity,price,description)
+
+            await rootuser.save();
+
+            res.status(201).json({message:"Product succesffuly saved"})
+        }
+
+    }
+    catch(err){
+res.status(401).send('Error In Adding the data')
+console.log(err)
+    }
 })
 
 

@@ -6,7 +6,6 @@ const bcrypt = require('bcryptjs')
 const userschema = new mongoose.Schema({
     username: {
         type: String,
-        required: true
     },
     email: {
         type: String,
@@ -21,6 +20,32 @@ const userschema = new mongoose.Schema({
         type: String,
         required: true
     },
+    products:[
+        {
+            brandname: {
+                type:String,
+                required:true
+            },
+            productname:{
+                type:String,
+                required:true
+            },
+            quantity:{
+                type:Number,
+                required:true
+            },
+            price:{
+                type:Number,
+                required:true
+            },
+            description:{
+                type:String,
+                required:true
+            }
+            
+        }
+    ]
+    ,
     tokens:
         [{
             token: {
@@ -50,6 +75,18 @@ userschema.methods.generateAuthToken = async function () {
     }
     catch (err) { 
         console.log("err")
+    }
+}
+
+userschema.methods.addmethod = async function(brandname,productname,quantity,price,description){
+    try{
+        this.products = this.products.concat({brandname,productname,quantity,price,description})
+        await this.save();
+        return this.products;
+        
+    }
+    catch(error){
+console.log(error)
     }
 }
 

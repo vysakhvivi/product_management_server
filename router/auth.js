@@ -20,9 +20,6 @@ const authenticate=require('../middleware/authenticate')
 
 
 
-
-
-
 router.get('/', (req, res) => {
     res.send('testing from backend router');
 });
@@ -68,7 +65,9 @@ router.post('/', async (req, res) => {
 
             if (samepass) {
                 
-                res.status(200).json(token)
+                res.status(200).json(userlogin)
+                console.log("userlogin: ",userlogin)
+
                       
             }
             else{
@@ -94,13 +93,17 @@ router.get('/homepage', async (req,res)=>{
 router.post('/addproduct', async (req,res)=>{
     try{
 
-    const {brandname,productname,quantity,price,description,tokendata}=req.body;
+    const {brandname,productname,quantity,price,description,email}=req.body;
 
         
     
-        const rootuser = await User.findOne({tokendata:"tokens.token"})
+        const rootuser = await User.findOne({'email':email})
 
-        console.log(rootuser)
+        console.log("email is ",email)
+
+        console.log("root user is ", rootuser)
+
+        
 
         if(!rootuser) 
         {
@@ -120,6 +123,23 @@ router.post('/addproduct', async (req,res)=>{
 res.status(401).send('Error In Adding the data')
 console.log(err)
     }
+})
+
+router.get('/listproduct', async  (req,res) =>{
+    
+            const username=req.query.username
+            console.log(username)
+            const rootuser = await User.findOne({'username':username})
+
+            console.log(rootuser)
+            if(!rootuser){
+                res.status("User not found")
+            }
+            else{
+                res.status(200).send(rootuser)
+                console.log(rootuser)
+            }
+
 })
 
 

@@ -152,7 +152,24 @@ router.delete('/deleteproduct', async (req,res) =>{
     }
     else
     {
-        res.status(200).send(req.params.id)
+        res.status(200).send(req.query.id)
+    }
+})
+
+router.get('/editproduct',async (req,res) =>{
+
+    const objid=req.query.id;
+    const result= await User.find({'products._id':objid}
+    ,{
+      _id:0,products:{$elemMatch:{_id:objid}}}
+    )
+
+    if(!result){
+        res.status(403).send('unsuccessfull')
+    }
+    else{
+        res.status(200).json(result)
+        console.log("edit data:",result)
     }
 })
 

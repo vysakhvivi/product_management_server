@@ -96,7 +96,6 @@ router.post('/addproduct', async (req,res)=>{
     const {brandname,productname,quantity,price,description,email}=req.body;
 
         
-    
         const rootuser = await User.findOne({'email':email})
 
         console.log("email is ",email)
@@ -125,22 +124,39 @@ console.log(err)
     }
 })
 
+
+
 router.get('/listproduct', async  (req,res) =>{
     
             const username=req.query.username
-            console.log(username)
             const rootuser = await User.findOne({'username':username})
 
-            console.log(rootuser)
             if(!rootuser){
                 res.status("User not found")
             }
             else{
                 res.status(200).send(rootuser)
-                console.log(rootuser)
             }
 
 })
+
+router.delete('/deleteproduct', async (req,res) =>{
+
+    const objid=req.query.id
+
+    const rootuser = await User.update({},{$pull:{"products":{"_id":objid}}},{multi:true})
+
+    console.log("rootuser:",rootuser)
+    if(!rootuser){
+        res.status("Product Delete Unsuccessfull")
+    }
+    else
+    {
+        res.status(200).send(req.params.id)
+    }
+})
+
+
 
 
 // router.get('./addproduct',async (req,res)=>{

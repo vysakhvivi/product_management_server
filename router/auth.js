@@ -173,6 +173,22 @@ router.get('/editproduct',async (req,res) =>{
     }
 })
 
+router.put('/productupdate',async (req,res)=>{
+    const objid=req.query.id;
+    const result=await User.update(
+        {'products._id':objid},
+        {
+          $set : req.body
+        }
+        )
+        if(!result){
+            res.status(403).send('unsuccessfull')
+        }
+        else{
+            res.status(200).json(result)
+            console.log("update data:",result)
+        }
+})
 
 
 

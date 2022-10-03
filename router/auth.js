@@ -44,7 +44,7 @@ router.post('/register', async (req, res) => {
         }).catch((err) => { console.log(err); })
 })
 
-router.post('/', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -86,7 +86,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.get('/homepage', async (req,res)=>{
+router.get('/', async (req,res)=>{
     console.log('home page')
 })
 
@@ -175,12 +175,15 @@ router.get('/editproduct',async (req,res) =>{
 
 router.put('/productupdate',async (req,res)=>{
     const objid=req.query.id;
-    const result=await User.update(
+    const datas=req.body
+    console.log(req.body)
+    const result=await User.updateOne(
         {'products._id':objid},
         {
-          $set : req.body
+          $set:datas
         }
         )
+        
         if(!result){
             res.status(403).send('unsuccessfull')
         }
@@ -188,6 +191,22 @@ router.put('/productupdate',async (req,res)=>{
             res.status(200).json(result)
             console.log("update data:",result)
         }
+})
+
+router.get('/product', async (req,res)=>{
+    const objid=req.query.id;
+    const result= await User.find({'products._id':objid}
+    ,{
+      _id:0,products:{$elemMatch:{_id:objid}}}
+    )
+
+    if(!result){
+        res.status(403).send('unsuccessfull')
+    }
+    else{
+        res.status(200).json(result)
+        console.log("edit data:",result)
+    }
 })
 
 

@@ -98,12 +98,6 @@ router.post('/addproduct', async (req,res)=>{
         
         const rootuser = await User.findOne({'email':email})
 
-        console.log("email is ",email)
-
-        console.log("root user is ", rootuser)
-
-        
-
         if(!rootuser) 
         {
             res.json({error:"please fill the product details "})
@@ -146,7 +140,6 @@ router.delete('/deleteproduct', async (req,res) =>{
 
     const rootuser = await User.update({},{$pull:{"products":{"_id":objid}}},{multi:true})
 
-    console.log("rootuser:",rootuser)
     if(!rootuser){
         res.status("Product Delete Unsuccessfull")
     }
@@ -205,7 +198,6 @@ router.get('/product', async (req,res)=>{
     }
     else{
         res.status(200).json(result)
-        console.log("edit data:",result)
     }
 })
 

@@ -2,15 +2,23 @@ const express = require('express')
 
 const router = express.Router();
 
+const multer=require('multer')
+
 const bcrypt = require('bcryptjs')
+
+
 
 const User = require("../model/userschema");
 
 const jwt= require('jsonwebtoken')
 
+
+
 const cookieparser= require('cookie-parser')
 
 router.use(cookieparser())
+
+
 
 
 require("../db/conn");

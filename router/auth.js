@@ -6,7 +6,7 @@ const multer=require('multer')
 
 const bcrypt = require('bcryptjs')
 
-
+const fs=require('fs')
 
 const User = require("../model/userschema");
 
@@ -18,8 +18,17 @@ const cookieparser= require('cookie-parser')
 
 router.use(cookieparser())
 
+const storage=multer.diskStorage({
+    destination:(req,file,cb)=>{
+        cb(null,'uploads')
+    },
+    filename:(req,file,cb)=>{
+        cb(null,file.originalname)
+    }
 
+})
 
+const upload = multer({storage:storage})
 
 require("../db/conn");
 
@@ -101,9 +110,12 @@ router.get('/', async (req,res)=>{
 router.post('/addproduct', async (req,res)=>{
     try{
 
+        
+
     const {brandname,productname,quantity,price,description,email}=req.body;
 
-        
+   
+
         const rootuser = await User.findOne({'email':email})
 
         if(!rootuser) 
@@ -112,6 +124,7 @@ router.post('/addproduct', async (req,res)=>{
         }
         else
         {
+       
             const addprod = await  rootuser.addmethod(brandname,productname,quantity,price,description)
 
             await rootuser.save();
@@ -176,12 +189,13 @@ router.get('/editproduct',async (req,res) =>{
 
 router.put('/productupdate',async (req,res)=>{
     const objid=req.query.id;
+
     const datas=req.body
     console.log(req.body)
     const result=await User.updateOne(
         {'products._id':objid},
         {
-          $set:datas
+        $set : {'products':datas}
         }
         )
         
@@ -193,6 +207,7 @@ router.put('/productupdate',async (req,res)=>{
             console.log("update data:",result)
         }
 })
+
 
 router.get('/product', async (req,res)=>{
     const objid=req.query.id;

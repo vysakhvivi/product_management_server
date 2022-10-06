@@ -2,38 +2,27 @@ const express = require('express')
 
 const router = express.Router();
 
-const multer=require('multer')
 
 const bcrypt = require('bcryptjs')
 
-const fs=require('fs')
 
 const User = require("../model/userschema");
 
-const jwt= require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 
 
 
-const cookieparser= require('cookie-parser')
+const cookieparser = require('cookie-parser')
 
 router.use(cookieparser())
 
-const storage=multer.diskStorage({
-    destination:(req,file,cb)=>{
-        cb(null,'uploads')
-    },
-    filename:(req,file,cb)=>{
-        cb(null,file.originalname)
-    }
 
-})
 
-const upload = multer({storage:storage})
 
 require("../db/conn");
 
 
-const authenticate=require('../middleware/authenticate')
+const authenticate = require('../middleware/authenticate')
 
 
 
@@ -42,7 +31,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-    const {username,email,place,password} = req.body;
+    const { username, email, place, password } = req.body;
 
     if (!username || !email || !place || !password) {
         return res.status(401).json({ error: "Enter the required fields" })
@@ -71,24 +60,24 @@ router.post('/login', async (req, res) => {
 
         if (userlogin) {
             const samepass = await bcrypt.compare(password, userlogin.password);
-        
+
             const token = await userlogin.generateAuthToken();
 
-            res.cookie("tokenjwt",token,{
-                httpOnly:true
+            res.cookie("tokenjwt", token, {
+                httpOnly: true
             })
 
-            
+
 
             if (samepass) {
-                
-                res.status(200).json(userlogin)
-                console.log("userlogin: ",userlogin)
 
-                      
+                res.status(200).json(userlogin)
+                console.log("userlogin: ", userlogin)
+
+
             }
-            else{
-                res.status(400).json({error:"Invalid data"})
+            else {
+                res.status(400).json({ error: "Invalid data" })
             }
         }
         else {
@@ -103,126 +92,178 @@ router.post('/login', async (req, res) => {
     }
 })
 
-router.get('/', async (req,res)=>{
+router.get('/', async (req, res) => {
     console.log('home page')
 })
 
-router.post('/addproduct', async (req,res)=>{
-    try{
+router.post('/addproduct', async (req, res) => {
+    try {
 
-        
 
-    const {brandname,productname,quantity,price,description,email}=req.body;
 
-   
+        const { brandname, productname, quantity, price, description, email } = req.body;
 
-        const rootuser = await User.findOne({'email':email})
 
-        if(!rootuser) 
-        {
-            res.json({error:"please fill the product details "})
+
+        const rootuser = await User.findOne({ 'email': email })
+
+        if (!rootuser) {
+            res.json({ error: "please fill the product details " })
         }
-        else
-        {
-       
-            const addprod = await  rootuser.addmethod(brandname,productname,quantity,price,description)
+        else {
+
+            const addprod = await rootuser.addmethod(brandname, productname, quantity, price, description)
 
             await rootuser.save();
 
-            res.status(201).json({message:"Product succesffuly saved"})
+            res.status(201).json({ message: "Product succesffuly saved" })
         }
 
     }
-    catch(err){
-res.status(401).send('Error In Adding the data')
-console.log(err)
+    catch (err) {
+        res.status(401).send('Error In Adding the data')
+        console.log(err)
     }
 })
 
 
 
-router.get('/listproduct', async  (req,res) =>{
-    
-            const username=req.query.username
-            const rootuser = await User.findOne({'username':username})
+router.get('/listproduct', async (req, res) => {
 
-            if(!rootuser){
-                res.status("User not found")
-            }
-            else{
-                res.status(200).send(rootuser)
-            }
+    const username = req.query.username
+    const rootuser = await User.findOne({ 'username': username })
+
+    if (!rootuser) {
+        res.status("User not found")
+    }
+    else {
+        res.status(200).send(rootuser)
+    }
 
 })
 
-router.delete('/deleteproduct', async (req,res) =>{
+router.delete('/deleteproduct', async (req, res) => {
 
-    const objid=req.query.id
+    const objid = req.query.id
 
-    const rootuser = await User.update({},{$pull:{"products":{"_id":objid}}},{multi:true})
+    const rootuser = await User.update({}, { $pull: { "products": { "_id": objid } } }, { multi: true })
 
-    if(!rootuser){
+    if (!rootuser) {
         res.status("Product Delete Unsuccessfull")
     }
-    else
-    {
+    else {
         res.status(200).send(req.query.id)
     }
 })
 
-router.get('/editproduct',async (req,res) =>{
+router.get('/editproduct', async (req, res) => {
 
-    const objid=req.query.id;
-    const result= await User.find({'products._id':objid}
-    ,{
-      _id:0,products:{$elemMatch:{_id:objid}}}
+    const objid = req.query.id;
+
+    console.log('object id is ',objid)
+    const result = await User.find({ 'products._id': objid }
+        , {
+            _id: 0, products: { $elemMatch: { _id: objid } }
+        }
     )
 
-    if(!result){
+    if (!result) {
         res.status(403).send('unsuccessfull')
     }
-    else{
+    else {
         res.status(200).json(result)
-        console.log("edit data:",result)
     }
 })
 
-router.put('/productupdate',async (req,res)=>{
-    const objid=req.query.id;
+router.put('/productupdate', async (req, res) => {
+    const objid = req.query.id;
 
-    const datas=req.body
-    console.log(req.body)
-    const result=await User.updateOne(
-        {'products._id':objid},
+    const datas = req.body.body
+
+    console.log(datas)
+
+    const result = await User.updateOne(
+        { 'products._id': objid },
         {
-        $set : {'products':datas}
+            $set: { 'products': datas }
         }
-        )
-        
-        if(!result){
-            res.status(403).send('unsuccessfull')
-        }
-        else{
-            res.status(200).json(result)
-            console.log("update data:",result)
-        }
+    )
+
+    if (!result) {
+        res.status(403).send('unsuccessfull')
+    }
+    else {
+        res.status(200).json(result)
+        console.log("update data:", result)
+    }
 })
 
 
-router.get('/product', async (req,res)=>{
-    const objid=req.query.id;
-    const result= await User.find({'products._id':objid}
-    ,{
-      _id:0,products:{$elemMatch:{_id:objid}}}
+
+
+router.get('/product', async (req, res) => {
+    const objid = req.query.id;
+    const result = await User.find({ 'products._id': objid }
+        , {
+            _id: 0, products: { $elemMatch: { _id: objid } }
+        }
     )
 
-    if(!result){
+    if (!result) {
         res.status(403).send('unsuccessfull')
     }
-    else{
+    else {
         res.status(200).json(result)
     }
 })
+
+router.patch('/up', async (req, res) => {
+    try {
+      const id = req.body.userid;
+  
+      User.findById(id, async (error, foundUser) => {
+        if (foundUser) {
+          const { products } = foundUser;
+          const { brandname, productname, quantity, price, description, _id } =
+            req.body;
+  
+          const filteredexpenses = products.filter((item) => {
+            return item._id != _id;
+          });
+  
+          while (foundUser.products.length > 0) {
+            foundUser.products.pop();
+          }
+  
+          foundUser.products = filteredexpenses;
+  
+          foundUser.products.push({
+            brandname,
+            productname,
+            quantity,
+            price,
+            description,
+          });
+          
+          await foundUser.save();
+  
+          res.status(200).send('update successfull');
+        } else {
+          console.log('User not found');
+          res.status(400).send('User not found');
+        }
+      });
+    } catch (err) {
+      res.status(403).send('update unsuccessfull');
+      console.log(err);
+    }
+  });
+
+
+
+
+
+
 
 
 

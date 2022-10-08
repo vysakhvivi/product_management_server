@@ -17,7 +17,7 @@ dotenv.config({path:'./config.env'})
 require('./db/conn')
 
 app.use(cors({
-    origin:"http://localhost:3000",credentials:true
+    origin:'*',credentials:true
 }))
 
 
